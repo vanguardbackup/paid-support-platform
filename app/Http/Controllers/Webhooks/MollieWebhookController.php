@@ -96,7 +96,6 @@ class MollieWebhookController extends Controller
                     'details' => $metadata->details,
                     'payment_id' => $payment->id,
                     'amount' => $payment->amount->value,
-                    'status' => 'completed',
                 ]);
                 $newPurchase->save();
 
