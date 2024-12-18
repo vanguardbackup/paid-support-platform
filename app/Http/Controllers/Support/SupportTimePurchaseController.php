@@ -45,36 +45,60 @@ class SupportTimePurchaseController extends Controller
         $user = auth()->user();
 
         try {
-            DB::beginTransaction();
-
+            // Create a Mollie payment for the requested support time
             $payment = $this->createMolliePayment($user, $validated);
-            $this->createSupportTimePurchase($user, $validated, $payment);
 
-            DB::commit();
-
+            // Redirect the user to Mollie's checkout page
             return redirect($payment->getCheckoutUrl(), 303);
         } catch (ApiException $e) {
-            DB::rollBack();
+            // Log Mollie API errors and return an error message
             Log::error('Mollie API error during payment initiation', ['error' => $e->getMessage()]);
 
             return redirect()->route('home')
-                ->with('error', 'An error occurred while initiating your payment. Please try again or contact support@vanguardbackup.com.');
+                ->with('error', 'An error occurred while initiating your payment. Please try again.');
         } catch (Exception $e) {
-            DB::rollBack();
+            // Log general errors and return a generic error message
             Log::error('Error during support time purchase', ['error' => $e->getMessage()]);
 
             return redirect()->route('home')
-                ->with('error', 'An unexpected error occurred. Please try again or contact support@vanguardbackup.com.');
+                ->with('error', 'An unexpected error occurred. Please try again.');
         }
     }
 
     /**
      * Handle the payment callback from Mollie.
      */
-    public function handlePaymentCallback(): RedirectResponse
+    public function handlePaymentCallback(Request $request): RedirectResponse
     {
-        return redirect()->route('home')
-            ->with('info', 'Your payment is being processed. We\'ll update your account once it\'s completed.');
+        try {
+            // Retrieve the payment object using Mollie API
+            $payment = Mollie::api()->payments->get($request->query('id'));
+
+            if ($payment->isPaid()) {
+                // If payment is successful, notify the user
+                return redirect()->route('home')
+                    ->with('success', 'Your payment has been successfully processed.');
+            }
+
+            if ($payment->isOpen() || $payment->isPending()) {
+                // If payment is still pending, notify the user
+                return redirect()->route('home')
+                    ->with('info', 'Your payment is still being processed. Please wait.');
+            }
+
+            if ($payment->isCanceled() || $payment->isExpired() || $payment->isFailed()) {
+                // If payment failed or was canceled, notify the user
+                return redirect()->route('home')
+                    ->with('error', 'Your payment could not be completed.');
+            }
+
+            // Handle unexpected payment statuses
+            return redirect()->route('home')->with('error', 'Unexpected payment status.');
+        } catch (ApiException $e) {
+            // Log Mollie API errors and return an error message
+            Log::error('Mollie API error during callback', ['error' => $e->getMessage()]);
+            return redirect()->route('home')->with('error', 'An error occurred while processing your payment.');
+        }
     }
 
     /**
@@ -97,27 +121,7 @@ class SupportTimePurchaseController extends Controller
                 'quantity' => $validated['quantity'],
                 'support_type' => $validated['support_type'],
                 'details' => $validated['details'],
-                'billing_address' => $user->billing_address,
-                'billing_city' => $user->billing_city,
-                'billing_state' => $user->billing_state,
-                'billing_country' => $user->billing_country,
-                'billing_zip_code' => $user->billing_zip_code,
             ],
-        ]);
-    }
-
-    /**
-     * Create a SupportTimePurchase record.
-     */
-    private function createSupportTimePurchase(User $user, array $validated, Payment $payment): void
-    {
-        SupportTimePurchase::create([
-            'user_id' => $user->id,
-            'quantity' => $validated['quantity'],
-            'support_type' => $validated['support_type'],
-            'details' => $validated['details'],
-            'payment_id' => $payment->id,
-            'amount' => $payment->amount->value,
         ]);
     }
 }
