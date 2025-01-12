@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Support;
 
 use App\Http\Controllers\Controller;
-use App\Models\SupportTimePurchase;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 use Mollie\Api\Exceptions\ApiException;
@@ -97,6 +95,7 @@ class SupportTimePurchaseController extends Controller
         } catch (ApiException $e) {
             // Log Mollie API errors and return an error message
             Log::error('Mollie API error during callback', ['error' => $e->getMessage()]);
+
             return redirect()->route('home')->with('error', 'An error occurred while processing your payment.');
         }
     }

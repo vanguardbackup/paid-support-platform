@@ -10,7 +10,7 @@ Thank you for your recent purchase of support time. We appreciate your trust in 
 - **Support Type:** {{ ucfirst($supportType) }}
 - **Payment ID:** {{ $paymentId }}
 
-@if($details)
+@if ($details)
 ## Additional Details You Provided
 {{ $details }}
 @endif

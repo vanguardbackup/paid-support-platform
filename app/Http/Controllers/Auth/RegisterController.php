@@ -21,6 +21,11 @@ class RegisterController extends Controller
         $this->middleware('guest');
     }
 
+    public function showRegistrationForm(): View
+    {
+        return view('auth.register', ['countries' => $this->getCountryList()]);
+    }
+
     protected function validator(array $data)
     {
         return Validator::make($data, [
@@ -49,11 +54,6 @@ class RegisterController extends Controller
         ]);
 
         return $user;
-    }
-
-    public function showRegistrationForm(): View
-    {
-        return view('auth.register', ['countries' => $this->getCountryList()]);
     }
 
     private function getCountryList(): array

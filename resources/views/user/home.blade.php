@@ -17,7 +17,7 @@
                     <div class="card-header">{{ __('Support Time Purchase History') }}</div>
 
                     <div class="card-body">
-                        @if($supportTimePurchases->reject->isExpired()->isEmpty())
+                        @if ($supportTimePurchases->reject->isExpired()->isEmpty())
                             <p>You don't have any active support time purchases.</p>
                         @else
                             <div class="table-responsive">
@@ -33,7 +33,7 @@
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @foreach($supportTimePurchases->reject->isExpired() as $purchase)
+                                    @foreach ($supportTimePurchases->reject->isExpired() as $purchase)
                                         <tr>
                                             <td>{{ $purchase->created_at->toFormattedDateString() }}</td>
                                             <td>{{ trans_choice(':count hour|:count hours', $purchase->quantity, ['count' => $purchase->quantity]) }}</td>

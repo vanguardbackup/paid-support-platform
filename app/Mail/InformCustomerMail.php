@@ -14,16 +14,8 @@ class InformCustomerMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct(
-        public readonly User $user,
-        public readonly int $purchasedTime,
-        public readonly string $supportType,
-        public readonly ?string $details,
-        public readonly string $paymentId
-    ) {
+    public function __construct(public readonly User $user, public readonly int $purchasedTime, public readonly string $supportType, public readonly ?string $details, public readonly string $paymentId)
+    {
         //
     }
 

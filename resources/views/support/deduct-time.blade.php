@@ -11,7 +11,7 @@
                         <input type="text" name="search" class="form-control" placeholder="Search by name or email" value="{{ $search }}">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-primary">Search</button>
-                            @if($search)
+                            @if ($search)
                                 <a href="{{ route('support.deduct.list') }}" class="btn btn-secondary">Clear</a>
                             @endif
                         </div>
@@ -38,7 +38,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @forelse($users as $user)
+                @forelse ($users as $user)
                     <tr>
                         <td>
                             <img src="{{ $user->gravatar }}" alt="{{ $user->name }}" class="rounded-circle mr-2" width="32" height="32">

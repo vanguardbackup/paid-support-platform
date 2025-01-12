@@ -13,7 +13,7 @@
 - **Email:** {{ $user->email }}
 - **Total Support Time Balance:** {{ $totalSupportTime }} hours
 
-@if($details)
+@if ($details)
 ## Additional Details
 {{ $details }}
 @endif

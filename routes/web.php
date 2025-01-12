@@ -25,7 +25,7 @@ Auth::routes();
 // Authenticated User Routes
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('home', [HomeController::class, 'index'])->name('home');
     // Profile Routes
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'edit'])->name('edit');
@@ -34,20 +34,20 @@ Route::middleware(['auth'])->group(function () {
 
     // Support Time Purchase Routes
     Route::prefix('support')->name('support.')->group(function () {
-        Route::get('/purchase', [SupportTimePurchaseController::class, 'showPurchaseForm'])->name('purchase');
-        Route::post('/purchase', [SupportTimePurchaseController::class, 'initiatePurchase'])->name('purchase.initiate');
-        Route::get('/payment/callback', [SupportTimePurchaseController::class, 'handlePaymentCallback'])->name('payment.callback');
+        Route::get('purchase', [SupportTimePurchaseController::class, 'showPurchaseForm'])->name('purchase');
+        Route::post('purchase', [SupportTimePurchaseController::class, 'initiatePurchase'])->name('purchase.initiate');
+        Route::get('payment/callback', [SupportTimePurchaseController::class, 'handlePaymentCallback'])->name('payment.callback');
 
         Route::middleware('admin')->group(function () {
-            Route::get('/list', [DeductTimeController::class, 'index'])->name('deduct.list');
-            Route::post('/list', [DeductTimeController::class, 'deductTime'])->name('deduct-time.post');
+            Route::get('list', [DeductTimeController::class, 'index'])->name('deduct.list');
+            Route::post('list', [DeductTimeController::class, 'deductTime'])->name('deduct-time.post');
         });
     });
 });
 
 // Webhook Routes
 Route::prefix('webhooks')->name('webhooks.')->group(function () {
-    Route::post('/mollie', [MollieWebhookController::class, 'handleWebhookNotification'])->name('mollie');
+    Route::post('mollie', [MollieWebhookController::class, 'handleWebhookNotification'])->name('mollie');
 });
 
-Route::view('/terms', 'terms')->name('terms');
+Route::view('terms', 'terms')->name('terms');

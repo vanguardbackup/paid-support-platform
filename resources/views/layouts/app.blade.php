@@ -73,7 +73,7 @@
                                 <a class="dropdown-item" href="{{ route('profile.edit') }}">
                                     {{ __('Edit Profile') }}
                                 </a>
-                                @if(Auth::user()->isAdmin())
+                                @if (Auth::user()->isAdmin())
                                     <a class="dropdown-item" href="{{ route('support.deduct.list') }}">
                                         {{ __('Manage Support Time') }}
                                     </a>

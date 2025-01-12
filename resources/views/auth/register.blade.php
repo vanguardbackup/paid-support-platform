@@ -81,7 +81,7 @@
                                 <div class="col-md-6">
                                     <select id="billing_country" class="form-select @error('billing_country') is-invalid @enderror" name="billing_country" required autocomplete="country-name">
                                         <option value="">Select a country</option>
-                                        @foreach($countries as $code => $name)
+                                        @foreach ($countries as $code => $name)
                                             <option value="{{ $code }}" {{ old('billing_country') == $code ? 'selected' : '' }}>{{ $name }}</option>
                                         @endforeach
                                     </select>

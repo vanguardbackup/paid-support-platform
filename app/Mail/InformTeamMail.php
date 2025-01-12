@@ -14,16 +14,8 @@ class InformTeamMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct(
-        public readonly User $user,
-        public readonly int $purchasedTime,
-        public readonly string $supportType,
-        public readonly ?string $details,
-        public readonly string $paymentId
-    ) {
+    public function __construct(public readonly User $user, public readonly int $purchasedTime, public readonly string $supportType, public readonly ?string $details, public readonly string $paymentId)
+    {
         //
     }
 
@@ -33,7 +25,7 @@ class InformTeamMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Support Time Purchased - '.$this->user->name
+            subject: 'Support Time Purchased - ' . $this->user->name
         );
     }
 

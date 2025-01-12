@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Aminkhoshzahmat\CountryCode\Enums\CountryType;
 use App\Http\Controllers\Controller;
+use Error;
 use Illuminate\Http\JsonResponse;
 
 class CityController extends Controller
@@ -35,8 +36,8 @@ class CityController extends Controller
             sort($cities); // Sort cities alphabetically
 
             return response()->json($cities);
-        } catch (\Error $e) {
-            return response()->json(['message' => 'An error occurred while fetching cities: '.$e->getMessage()], 500);
+        } catch (Error $e) {
+            return response()->json(['message' => 'An error occurred while fetching cities: ' . $e->getMessage()], 500);
         }
     }
 }
