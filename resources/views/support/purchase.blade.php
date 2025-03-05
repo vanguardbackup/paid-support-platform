@@ -118,10 +118,18 @@
             const purchaseButton = document.getElementById('purchaseButton');
             const unitPrice = {{ $unitPrice }};
 
+            function formatCurrency(amount) {
+                const formattedNumber = new Intl.NumberFormat('en-GB', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(amount);
+                return '£' + formattedNumber;
+            }
+
             function updateTotalPrice() {
                 const quantity = parseInt(quantityInput.value);
                 const totalPrice = quantity * unitPrice;
-                totalPriceElement.textContent = '£' + totalPrice.toFixed(2);
+                totalPriceElement.textContent = formatCurrency(totalPrice);
             }
 
             function updatePurchaseButtonState() {
