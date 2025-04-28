@@ -12,6 +12,14 @@ import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import SettingsLayout from '@/layouts/settings/layout';
 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Profile settings',
@@ -22,14 +30,24 @@ const breadcrumbs: BreadcrumbItem[] = [
 type ProfileForm = {
     name: string;
     email: string;
-}
+    timezone: string;
+};
 
-export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: boolean; status?: string }) {
+export default function Profile({
+                                    mustVerifyEmail,
+                                    status,
+                                    timezones,
+                                }: {
+    mustVerifyEmail: boolean;
+    status?: string;
+    timezones: string[];
+}) {
     const { auth } = usePage<SharedData>().props;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm<Required<ProfileForm>>({
         name: auth.user.name,
         email: auth.user.email,
+        timezone: auth.user.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
 
     const submit: FormEventHandler = (e) => {
@@ -103,6 +121,28 @@ export default function Profile({ mustVerifyEmail, status }: { mustVerifyEmail: 
                                 )}
                             </div>
                         )}
+
+                        <div className="grid gap-2">
+                            <Label htmlFor="timezone">Timezone</Label>
+
+                            <Select
+                                value={data.timezone}
+                                onValueChange={(value) => setData('timezone', value)}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select your timezone" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {timezones.map((tz) => (
+                                        <SelectItem key={tz} value={tz}>
+                                            {tz}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <InputError className="mt-2" message={errors.timezone} />
+                        </div>
 
                         <div className="flex items-center gap-4">
                             <Button disabled={processing}>Save</Button>
