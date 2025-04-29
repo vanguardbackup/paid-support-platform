@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\Credits\ShowCreditIndexController;
 use App\Http\Controllers\Support\CreateSupportRequestController;
 use App\Http\Controllers\Support\ShowSupportIndexController;
+use App\Http\Controllers\Support\Staff\CloseRequestAndCalculateController;
+use App\Http\Controllers\Support\Staff\CloseRequestController;
 use App\Http\Controllers\Support\Staff\UpdateSupportRequestController;
 use App\Http\Controllers\Support\ViewRequestController;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/support', [CreateSupportRequestController::class, 'store'])->name('support.store');
     Route::get('/support/{supportRequest}', [ViewRequestController::class, '__invoke'])->name('support.show');
     Route::post('/support/{supportRequest}', [UpdateSupportRequestController::class, '__invoke'])->name('support.update');
+    Route::post('/support/{supportRequest}/close-only', [CloseRequestController::class, '__invoke'])->name('support.close-only');
+    Route::post('/support/{supportRequest}/close', [CloseRequestAndCalculateController::class, '__invoke'])->name('support.close');
+    Route::get('/credits', [ShowCreditIndexController::class, '__invoke'])->name('credits.index');
 });
 
 require __DIR__.'/settings.php';

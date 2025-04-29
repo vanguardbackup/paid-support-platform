@@ -59,3 +59,49 @@ it('only returns staff members', function () {
         ->and($staffUsers->first()->isStaff())->toBeTrue()
         ->and($staffUsers->first()->name)->toBe('Staff User');
 });
+
+it('returns true if the user has negative credits', function () {
+    $user = User::factory()->negativeCredits()->create();
+
+    expect($user->hasNegativeCredits())->toBeTrue();
+});
+
+it('returns false if the user does not have negative credits', function () {
+    $user = User::factory()->positiveCredits()->create();
+
+    expect($user->hasNegativeCredits())->toBeFalse();
+});
+
+it('returns true if the user has no credits', function () {
+    $user = User::factory()->create();
+
+    expect($user->hasNoCredits())->toBeTrue();
+});
+
+it('returns false if the user has credits', function () {
+    $user = User::factory()->positiveCredits()->create();
+
+    expect($user->hasNoCredits())->toBeFalse();
+});
+
+it('returns true if the user has a negative credit balance', function () {
+    $user = User::factory()->negativeCredits()->create();
+
+    expect($user->hasNegativeCredits())->toBeTrue();
+});
+
+it('deducts credits from the users balance and makes it negative', function () {
+    $user = User::factory()->create(); // 0 credits
+
+    $user->deductCredits(10);
+
+    expect($user->credit_balance)->toBe(-10);
+});
+
+it('deducts credits from the users balance', function () {
+    $user = User::factory()->create(['credit_balance' => 10]);
+
+    $user->deductCredits(5);
+
+    expect($user->credit_balance)->toBe(5);
+});

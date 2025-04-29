@@ -30,6 +30,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'timezone' => 'UTC',
+            'credit_balance' => 0,
         ];
     }
 
@@ -50,6 +52,20 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'staff_at' => now(),
+        ]);
+    }
+
+    public function positiveCredits(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'credit_balance' => '100',
+        ]);
+    }
+
+    public function negativeCredits(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'credit_balance' => '-100',
         ]);
     }
 }

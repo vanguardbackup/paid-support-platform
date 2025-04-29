@@ -38,6 +38,7 @@ export interface User {
     avatar?: string;
     email_verified_at: string | null;
     is_staff_member: boolean;
+    credit_balance: number;
     timezone: string;
     created_at: string;
     updated_at: string;

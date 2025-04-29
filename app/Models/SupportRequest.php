@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Database\Factories\SupportRequestFactory;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -130,5 +131,61 @@ class SupportRequest extends Model
                 return sprintf('%d:%s %s', $hour, $minute, $suffix);
             }
         );
+    }
+
+    /**
+     *  Close the support request.
+     */
+    public function closeRequest(): void
+    {
+        if ($this->status === self::STATUS_CLOSED) {
+            return;
+        }
+
+        $this->update([
+            'status' => self::STATUS_CLOSED,
+            'resolved_at' => Carbon::now(),
+        ]);
+
+        $this->save();
+    }
+
+    /**
+     *  Calculate the credits owed based on the preferred date/time and resolved time.
+     */
+    public function calculateCreditsOwed()
+    {
+        $preferredDate = $this->preferred_date;
+        $preferredTime = $this->preferred_time;
+        $resolvedTime = $this->resolved_at;
+
+        // Safety checks to ensure we have all required data
+        if (! $preferredDate || ! $preferredTime || ! $resolvedTime) {
+            return 0; // Cannot calculate credits if any required data is missing
+        }
+
+        // Create DateTime objects for the preferred datetime and resolved time
+        $preferredDateTime = clone $preferredDate;
+
+        // Parse preferred time
+        [$hours, $minutes] = explode(':', $preferredTime);
+        $preferredDateTime->setTime((int) $hours, (int) $minutes, 0);
+
+        // If resolved_at is before the preferred datetime, no credits are owed
+        if ($resolvedTime < $preferredDateTime) {
+            return 0;
+        }
+
+        // Calculate time difference in hours
+        $timeDifference = $resolvedTime->diffInHours($preferredDateTime, false);
+
+        // If we want to include partial hours (e.g., 1.5 hours = 1.5 credits)
+        $minutes = $resolvedTime->diffInMinutes($preferredDateTime, false) % 60;
+        $credits = $timeDifference + ($minutes / 60);
+
+        // Round to nearest 0.5 credit if desired
+        $credits = round($credits * 2) / 2;
+
+        return $credits;
     }
 }

@@ -23,8 +23,6 @@ export default function Index() {
 
     const openRequests = supportRequests.filter(req => req.status === 'open').length;
     const totalRequests = supportRequests.length;
-    const supportCredits = 15;
-
     const getStatusVariant = (status: string): "open" | "default" | "destructive" | "inprogress" => {
         switch(status) {
             case 'open': return 'open';
@@ -71,7 +69,7 @@ export default function Index() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-muted-foreground font-medium">Available Support Credits</p>
-                                    <p className="text-3xl font-bold mt-2">{supportCredits}</p>
+                                    <p className="text-3xl font-bold mt-2">{auth.user.credit_balance}</p>
                                 </div>
                                 <div className="bg-pink-100 dark:bg-pink-950 p-3 rounded-full">
                                     <CoinsIcon size={32} className="text-pink-600 dark:text-pink-400" />

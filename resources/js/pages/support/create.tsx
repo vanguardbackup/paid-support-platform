@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/react';
+import {type BreadcrumbItem, type SharedData, type SupportRequest} from '@/types';
+import {Head, useForm, usePage} from '@inertiajs/react';
 import { useEffect } from 'react';
 import {
     ClockIcon,
@@ -103,7 +103,12 @@ const timezones = [
     { value: 'UTC+12:00', label: '(UTC+12:00) Auckland, Wellington' },
 ];
 
+type CreatePageProps = SharedData
+
 export default function Create({ availableCategories, availableAssistanceTypes }: Props) {
+    const page = usePage<CreatePageProps>();
+    const { auth } = page.props;
+
     const { data, setData, post, processing, errors } = useForm<SupportRequestForm>({
         category: 'technical', // Default selection
         additional_category_info: '',
@@ -129,6 +134,8 @@ export default function Create({ availableCategories, availableAssistanceTypes }
         post('/support');
     };
 
+    const userHasCredits = auth.user.credit_balance > 0;
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Create Support Request" />
@@ -139,6 +146,7 @@ export default function Create({ availableCategories, availableAssistanceTypes }
                     Fill out the form below to request support from our team.
                 </p>
 
+                {userHasCredits ? (
                 <Card className="mt-6 border">
                     <CardHeader>
                         <CardTitle>Support Request Details</CardTitle>
@@ -391,6 +399,29 @@ export default function Create({ availableCategories, availableAssistanceTypes }
                         </form>
                     </CardContent>
                 </Card>
+                ) : (
+                    <div className="mt-6 p-6 bg-red-50 border border-red-200 text-red-700 rounded-lg shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="bg-red-100 p-3 rounded-full">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636a9 9 0 11-12.728 0m12.728 0L12 12m0 0l-6.364-6.364M12 12v6" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p className="text-xl font-bold">Insufficient Credits</p>
+                                <p className="mt-1 text-sm">
+                                    You currently have <span className="font-semibold">{auth.user.credit_balance}</span> support credits.
+                                    You need at least <span className="font-semibold">1 credit</span> to open a support ticket.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="mt-4">
+                            <a href="/credits" className="inline-block bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition">
+                                Purchase Credits
+                            </a>
+                        </div>
+                    </div>
+                )}
             </div>
         </AppLayout>
     );

@@ -81,6 +81,34 @@ class User extends Authenticatable
     }
 
     /**
+     *  Determine if the user has a negative credit balance.
+     */
+    public function hasNegativeCredits(): bool
+    {
+        return $this->credit_balance < 0;
+    }
+
+    /**
+     *  Determine if the user has 0 credits.
+     */
+    public function hasNoCredits(): bool
+    {
+        return $this->credit_balance === 0;
+    }
+
+    /**
+     *  Deduct credits from the user's balance.
+     */
+    public function deductCredits(int $amount): void
+    {
+        $this->forceFill([
+            'credit_balance' => $this->credit_balance - $amount,
+        ]);
+
+        $this->save();
+    }
+
+    /**
      * An appended attribute to get staff member status.
      */
     protected function isStaffMember(): Attribute
